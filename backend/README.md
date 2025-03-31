@@ -1,7 +1,5 @@
 # WebScraping
 
-Web scraping tools for BRANDA
-
 ## JSON Structure for News
 {
   "section_1": [
@@ -24,3 +22,4 @@ Web scraping tools for BRANDA
   ],
   "...": "Additional sections follow the same structure as above."
 }
+

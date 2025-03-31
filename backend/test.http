@@ -1,0 +1,10 @@
+GET http://localhost:5000/dining_hours?date=2025-03-09
+Content-Type: application/json
+
+###
+GET http://localhost:5000/justice_features
+Content-Type: application/json
+
+###
+GET http://localhost:5000/hoot_articles
+Content-Type: application/json
