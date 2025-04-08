@@ -8,7 +8,7 @@ def scrape_news_page(url, result, section):
     soup = BeautifulSoup(response.content, 'html.parser')
     
     # Find the articles for the section
-    articles = soup.find_all("div", class_="jet-listing-grid__item", limit=8)
+    articles = soup.find_all("div", class_="jet-listing-grid__item", limit=7)
     articles = articles[1:]  # The first div is not a formal article
     for article in articles:
         # Extract title, author, date, description, and link fields

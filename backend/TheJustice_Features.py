@@ -1,64 +1,66 @@
+from bs4 import BeautifulSoup
 import requests
-import re
 import json
-import os
 
 headers = {
     "User-Agent": "Mozilla/5.0"
 }
 session = requests.Session()
-response = session.get("https://www.thejustice.org/section/features", headers=headers)
-article_pattern = "https://www.thejustice.org/article"
-html = response.content.decode('utf-8')
 NUMBER_OF_ARTICLES = 7
 
-def extract_article(html: str) -> tuple:
-    html_in_parts = re.split(article_pattern, html, maxsplit=2)
-    match = re.match(r'^[^\'"]*', html_in_parts[1])  # until "
-    article_link = (article_pattern + match.group(0))
-    html = html_in_parts[2]
-    
-    title_pattern = r'>([^<]+)<\/a>'  # between ">" and "</a>"
-    author_pattern = r'<span class="author-name byline"><a [^>]+>([^<]+)</a>'  # inside the <a> tag within the span
-    description_pattern = r'<p class="article-abstract has-photo">([^<]+)'  # inside <p> tag with class "article-abstract has-photo"
-    date_pattern = r'<span class="published-date">\s*\|\s*([\d/]+)\s*</span>'  # inside the <span class="published-date">
-    
-    title_match = re.search(title_pattern, html)
-    title = title_match.group(1).strip()
-    
-    author_match = re.search(author_pattern, html)
-    author = author_match.group(1).strip()
+SECTIONS = {
+    "News": "news",
+    "Features": "features",
+    "Forum": "forum",
+    "Sports": "sports",
+    "Arts and Culture": "arts"
+}
 
-    description_match = re.search(description_pattern, html)
-    description = description_match.group(1).strip()
-    description = re.sub(r'&nbsp;', '', description)  # replace &nbsp; with a regular space
-
-    date_match = re.search(date_pattern, html)
-    date = date_match.group(1).strip()
-
-    article = {
-        "title": title,
-        "author": author,
-        "description": description,
-        "date_published": date,
-        "link": article_link
-    }
+def get_section_articles(section_url: str) -> list:
+    response = session.get(section_url, headers=headers)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    articles = []
     
-    # remaining html after this article
-    html = "https://www.thejustice.org/article/" + html.split("https://www.thejustice.org/article/", 1)[1]
-
-    return article, html
+    # Find all article elements
+    article_elements = soup.find_all('article', class_='art-left', limit=NUMBER_OF_ARTICLES)
+    
+    for article in article_elements:
+        # Extract title and link
+        title_tag = article.find('h4', class_='art-left-headline').find('a')
+        title = title_tag.get_text(strip=True) if title_tag else None
+        link = title_tag['href'] if title_tag else None
+        
+        # Extract author
+        author_tag = article.find('span', class_='author-name')
+        author = author_tag.find('a').get_text(strip=True) if author_tag else None
+        
+        # Extract date
+        date_tag = article.find('span', class_='published-date')
+        date = date_tag.get_text(strip=True).replace('|', '').strip() if date_tag else None
+        
+        # Extract description (if available)
+        description_tag = article.find('p', class_='article-abstract')
+        description = description_tag.get_text(strip=True) if description_tag else ""
+        
+        articles.append({
+            "title": title,
+            "author": author,
+            "description": description,
+            "date_published": date,
+            "link": link
+        })
+    
+    return articles
 
 def get_articles() -> str:
-    articles = []
-    remaining_html = html
-    for _ in range(NUMBER_OF_ARTICLES):  # number of articles
-        article, remaining_html = extract_article(remaining_html)
-        articles.append(article)
-        if not remaining_html:
-            break
-    return json.dumps(articles, ensure_ascii=False, indent=4)
+    all_sections = {}
+    
+    for section_name, section_path in SECTIONS.items():
+        url = f"https://www.thejustice.org/section/{section_path}"
+        section_articles = get_section_articles(url)
+        all_sections[section_name] = section_articles
+    
+    return json.dumps(all_sections, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
-    # for testing purposes, print the result
     print(get_articles())
