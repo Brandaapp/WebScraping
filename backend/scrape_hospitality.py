@@ -33,9 +33,9 @@ class DiningLocations(Enum):
     USDAN = ('Usdan Kitchen', LOWER_USDAN, "https://www.brandeishospitality.com/locations/lower-usdan/?date=")
     SHERMAN = ('Farm Table at Sherman', SHERMAN_HASS, "https://www.brandeishospitality.com/locations/the-farm-table-at-sherman-2/?date=")
     KOSHER = ('Kosher Table at Sherman', SHERMAN_HASS, "https://www.brandeishospitality.com/locations/the-farm-table-at-sherman/?date=")
-    STEIN = ('The Stein', SHERMAN_HASS, "https://www.brandeishhospitality.com/locations/the-stein/?date=")
-    UPPER = ('the Hive Culinary Studio', UPPER_USDAN, "https://www.brandeishhospitality.com/locations/greens-grains/?date=")
-    LOUIS = ("Louis' Deli", UPPER_USDAN, "https://www.brandeishhospitality.com/locations/louis-deli/?date=")
+    STEIN = ('The Stein', SHERMAN_HASS, "https://www.brandeishospitality.com/locations/the-stein/?date=")
+    UPPER = ('the Hive Culinary Studio', UPPER_USDAN, "https://www.brandeishospitality.com/locations/greens-grains/?date=")
+    LOUIS = ("Louis' Deli", UPPER_USDAN, "https://www.brandeishospitality.com/locations/louis-deli/?date=")
     # dining locations without their own page
     CSTORE = ('The Hoot', LOWER_USDAN, MENU_AND_HOURS)
     EINSTEIN = ('Einstein Bros. Bagels', SCC, MENU_AND_HOURS)
